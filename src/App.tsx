@@ -7,19 +7,31 @@ import {
   Twitter,
 } from "@mui/icons-material";
 import {
+  AppBar,
   Grid,
   Link,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
+  Toolbar,
   Tooltip,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 
 function App() {
+  const [hoge, setHoge] = useState<{ id: number; title: string }[]>([
+    { id: 1, title: "初期値" },
+  ]);
+
+  useEffect(() => {
+    fetch("/articles/")
+      .then((res) => res.json())
+      .then((json) => setHoge(json));
+  }, []);
+
   const links: {
     name: string;
     icon: JSX.Element | null;
@@ -64,38 +76,45 @@ function App() {
     },
   ];
   return (
-    <Grid container alignItems="center" justifyContent="center">
-      <Grid item>
-        <h1>Taroro's Home</h1>
-        <Typography paragraph={true}>
-          I am a Web Developer Currently developing BtoB SaaS at a start-up
-          company from 2020.11
-          <br />
-          Master of Science in Physics（Particle Physics,
-          <br />
-          Quantum Mechanics, Cosmology）
-        </Typography>
-        <h2>Experience</h2>
-        <h2>Links</h2>
-        <List>
-          {links.map((link) => (
-            <ListItem>
-              <Tooltip title={link.name}>
-                <ListItemIcon>{link.icon}</ListItemIcon>
-              </Tooltip>
-              <Link
-                href={`https://${link.url}`}
-                underline="none"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <ListItemText primary={`@${link.userId}`} />
-              </Link>
-            </ListItem>
-          ))}
-        </List>
+    <>
+      <AppBar position="static">
+        <Toolbar>Blog</Toolbar>
+      </AppBar>
+      <Grid container alignItems="center" justifyContent="center">
+        <Grid item>
+          <h1>Taroro's Home</h1>
+          <Typography paragraph={true}>
+            I am a Web Developer Currently developing BtoB SaaS at a start-up
+            company from 2020.11
+            <br />
+            Master of Science in Physics（Particle Physics,
+            <br />
+            Quantum Mechanics, Cosmology）
+            <br />
+            {hoge.map((fuga) => fuga.title)}
+          </Typography>
+          <h2>Experience</h2>
+          <h2>Links</h2>
+          <List>
+            {links.map((link) => (
+              <ListItem>
+                <Tooltip title={link.name}>
+                  <ListItemIcon>{link.icon}</ListItemIcon>
+                </Tooltip>
+                <Link
+                  href={`https://${link.url}`}
+                  underline="none"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ListItemText primary={`@${link.userId}`} />
+                </Link>
+              </ListItem>
+            ))}
+          </List>
+        </Grid>
       </Grid>
-    </Grid>
+    </>
   );
 }
 
