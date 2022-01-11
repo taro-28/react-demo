@@ -18,63 +18,89 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { API } from "aws-amplify";
 import React, { useEffect, useState } from "react";
 import "./App.css";
+import { createArticle } from "./graphql/mutations";
+import { listArticles } from "./graphql/queries";
+
+const links: {
+  name: string;
+  icon: JSX.Element | null;
+  url: string;
+  userId: string;
+}[] = [
+  {
+    name: "GitHub",
+    icon: <GitHub />,
+    url: "github.com/taro-28",
+    userId: "taro-28",
+  },
+  {
+    name: "Twitter",
+    icon: <Twitter />,
+    url: "twitter.com/taroro_tarotaro",
+    userId: "taroro_tarotaro",
+  },
+  {
+    name: "Facebook",
+    icon: <Facebook />,
+    url: "www.facebook.com/taroro28/",
+    userId: "taroro28",
+  },
+  {
+    name: "Wantedly",
+    icon: <Star />,
+    url: "www.wantedly.com/id/taro_28",
+    userId: "taro_28",
+  },
+  {
+    name: "AtCoder",
+    icon: <EmojiEvents />,
+    url: "atcoder.jp/users/taroro_tarotaro",
+    userId: "taroro_tarotaro",
+  },
+  {
+    name: "ブクログ",
+    icon: <MenuBook />,
+    url: "booklog.jp/users/taro-28",
+    userId: "taro-28",
+  },
+];
+
+const initialFormState = { id: -1, name: "", description: "" };
 
 function App() {
-  const [hoge, setHoge] = useState<{ id: number; title: string }[]>([
-    { id: 1, title: "初期値" },
-  ]);
+  const [articles, setArticles] = useState<
+    {
+      id: number;
+      name: string;
+      description: string;
+    }[]
+  >([]);
+
+  const [formData, setFormData] = useState(initialFormState);
 
   useEffect(() => {
-    fetch("/articles/")
-      .then((res) => res.json())
-      .then((json) => setHoge(json));
+    fetchArticles();
   }, []);
 
-  const links: {
-    name: string;
-    icon: JSX.Element | null;
-    url: string;
-    userId: string;
-  }[] = [
-    {
-      name: "GitHub",
-      icon: <GitHub />,
-      url: "github.com/taro-28",
-      userId: "taro-28",
-    },
-    {
-      name: "Twitter",
-      icon: <Twitter />,
-      url: "twitter.com/taroro_tarotaro",
-      userId: "taroro_tarotaro",
-    },
-    {
-      name: "Facebook",
-      icon: <Facebook />,
-      url: "www.facebook.com/taroro28/",
-      userId: "taroro28",
-    },
-    {
-      name: "Wantedly",
-      icon: <Star />,
-      url: "www.wantedly.com/id/taro_28",
-      userId: "taro_28",
-    },
-    {
-      name: "AtCoder",
-      icon: <EmojiEvents />,
-      url: "atcoder.jp/users/taroro_tarotaro",
-      userId: "taroro_tarotaro",
-    },
-    {
-      name: "ブクログ",
-      icon: <MenuBook />,
-      url: "booklog.jp/users/taro-28",
-      userId: "taro-28",
-    },
-  ];
+  async function fetchArticles() {
+    const apiData: any = await API.graphql({ query: listArticles });
+    setArticles(apiData.data.listArticles.items);
+  }
+
+  async function createNote() {
+    if (!formData.name || !formData.description) return;
+    await API.graphql({
+      query: createArticle,
+      variables: { input: formData },
+    });
+
+    setArticles([...articles, formData]);
+    setFormData(initialFormState);
+  }
+
   return (
     <>
       <AppBar position="static">
@@ -83,6 +109,25 @@ function App() {
       <Grid container alignItems="center" justifyContent="center">
         <Grid item>
           <h1>Taroro's Home</h1>
+          <input
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            placeholder="Note name"
+            value={formData.name}
+          />
+          <input
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+            placeholder="Note description"
+            value={formData.description}
+          />
+          <button onClick={createNote}>Create Note</button>
+          {articles.map((article) => (
+            <>
+              <h2>{article.id || article.name}</h2>
+              <p>{article.description}</p>
+            </>
+          ))}
           <Typography paragraph={true}>
             I am a Web Developer Currently developing BtoB SaaS at a start-up
             company from 2020.11
@@ -90,8 +135,6 @@ function App() {
             Master of Science in Physics（Particle Physics,
             <br />
             Quantum Mechanics, Cosmology）
-            <br />
-            {hoge.map((fuga) => fuga.title)}
           </Typography>
           <h2>Experience</h2>
           <h2>Links</h2>
