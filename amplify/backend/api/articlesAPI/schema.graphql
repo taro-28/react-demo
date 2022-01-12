@@ -8,3 +8,4 @@ type Article @model {
   name: String!
   description: String
 }
+ 

@@ -1,3 +1,4 @@
+import { AmplifySignOut, withAuthenticator } from "@aws-amplify/ui-react";
 import {
   EmojiEvents,
   Facebook,
@@ -23,6 +24,7 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import { createArticle } from "./graphql/mutations";
 import { listArticles } from "./graphql/queries";
+import logo from "./logo.svg";
 
 const links: {
   name: string;
@@ -68,12 +70,12 @@ const links: {
   },
 ];
 
-const initialFormState = { id: -1, name: "", description: "" };
+const initialFormState = { name: "", description: "" };
 
 function App() {
   const [articles, setArticles] = useState<
     {
-      id: number;
+      id?: number;
       name: string;
       description: string;
     }[]
@@ -105,6 +107,9 @@ function App() {
     <>
       <AppBar position="static">
         <Toolbar>Blog</Toolbar>
+        <img src={logo} className="App-logo" alt="logo" />
+        <h1>We now have Auth!</h1>
+        <AmplifySignOut />
       </AppBar>
       <Grid container alignItems="center" justifyContent="center">
         <Grid item>
@@ -161,4 +166,4 @@ function App() {
   );
 }
 
-export default App;
+export default withAuthenticator(App);

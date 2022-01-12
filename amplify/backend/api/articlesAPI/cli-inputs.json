@@ -3,10 +3,21 @@
   "serviceConfiguration": {
     "apiName": "articlesAPI",
     "serviceName": "AppSync",
-    "gqlSchemaPath": "/Users/taro/WorkSpace/react-demo/amplify/backend/api/articlesAPI/schema.graphql",
+    "gqlSchemaPath": "/tmp/amplify-623ec92f-fe39-4f41-9f31-39bcbb4dfe12/amplify/backend/api/articlesAPI/schema.graphql",
     "defaultAuthType": {
       "mode": "API_KEY",
-      "expirationTime": 7
-    }
+      "keyDescription": "api key description",
+      "expirationTime": 30
+    },
+    "conflictResolution": {
+      "defaultResolutionStrategy": {
+        "type": "AUTOMERGE"
+      }
+    },
+    "additionalAuthTypes": [
+      {
+        "mode": "AWS_IAM"
+      }
+    ]
   }
 }
